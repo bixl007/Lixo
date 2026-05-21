@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: lixo-postgres
+    environment:
+      POSTGRES_DB: lixo
+      POSTGRES_USER: lixo_user
+      POSTGRES_PASSWORD: lixo_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lixo-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=jdbc:postgresql://postgres:5432/lixo
+      - DB_USERNAME=lixo_user
+      - DB_PASSWORD=lixo_pass
+      - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lixo-frontend
+    ports:
+      - "5173:80"
+    environment:
+      - VITE_API_URL=http://localhost:8080
+
+volumes:
+  postgres-data:
