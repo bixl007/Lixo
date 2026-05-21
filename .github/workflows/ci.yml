@@ -46,7 +46,7 @@ jobs:
     - name: Build Frontend
       working-directory: ./frontend
       run: |
-        npm install
+        npm install --legacy-peer-deps
         npm run build
 
     - name: Set up Docker Buildx
